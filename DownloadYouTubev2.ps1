@@ -48,7 +48,7 @@ function Create_RSS_v1([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                     Out-File -FilePath $strFile -InputObject $txtRSSFile;
                     # Send-ToEmail -email "mphfckm6ji@pomail.net" -subject "RSS Podcast Downloaded (${ChannelID})" -body "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
 
-                    # $htmltext = "From: a.wirthy@gmail.com$([Environment]::NewLine)To: mphfckm6ji@pomail.net$([Environment]::NewLine)Subject: RSS Podcast Downloaded (${ChannelID})$([Environment]::NewLine)${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
+                    
                     $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                     Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
                     # cat /config/pushovernotify.txt | msmtp -a gmail mphfckm6ji@pomail.net
@@ -85,8 +85,6 @@ function Create_RSS_v1([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                     # Set-Content -Path $strFile -Value "${txtRSSFile}";
                     Out-File -FilePath $strFile -InputObject $txtRSSFile;
                     # Send-ToEmail -email "mphfckm6ji@pomail.net" -subject "RSS Podcast Downloaded (${ChannelID})" -body "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
-
-                    # $htmltext = "From: a.wirthy@gmail.com$([Environment]::NewLine)To: mphfckm6ji@pomail.net$([Environment]::NewLine)Subject: RSS Podcast Downloaded (${ChannelID})$([Environment]::NewLine)${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                     $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                     Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
                     # cat /config/pushovernotify.txt | msmtp -a gmail mphfckm6ji@pomail.net
@@ -174,7 +172,7 @@ function Create_RSS([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                     Out-File -FilePath $strFile -InputObject $txtRSSFile;
                     # Send-ToEmail -email "mphfckm6ji@pomail.net" -subject "RSS Podcast Downloaded (${ChannelID})" -body "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
 
-                    # $htmltext = "From: a.wirthy@gmail.com$([Environment]::NewLine)To: mphfckm6ji@pomail.net$([Environment]::NewLine)Subject: RSS Podcast Downloaded (${ChannelID})$([Environment]::NewLine)${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
+                    
                     # $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                     # Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
                     # cat /config/pushovernotify.txt | msmtp -a gmail mphfckm6ji@pomail.net
@@ -254,7 +252,7 @@ function Create_RSS([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                     Out-File -FilePath $strFile -InputObject $txtRSSFile;
                     # Send-ToEmail -email "mphfckm6ji@pomail.net" -subject "RSS Podcast Downloaded (${ChannelID})" -body "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
 
-                    # $htmltext = "From: a.wirthy@gmail.com$([Environment]::NewLine)To: mphfckm6ji@pomail.net$([Environment]::NewLine)Subject: RSS Podcast Downloaded (${ChannelID})$([Environment]::NewLine)${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
+                    
                     # $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                     # Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
                     # cat /config/pushovernotify.txt | msmtp -a gmail mphfckm6ji@pomail.net
@@ -679,8 +677,6 @@ Catch {
     Write-to_Log -title "Exception" -content "$ErrMsgException";
     $ErrorBody = "***********************************     ERROR     ***********************************$([Environment]::NewLine)$([Environment]::NewLine)CategoryInfo: $(ErrMsgCategoryInfo)$([Environment]::NewLine)TargetObject: $(ErrMsgTargetObject)$([Environment]::NewLine)InvocationInfo: $(ErrMsgInvocationInfo)$([Environment]::NewLine)--------------------$([Environment]::NewLine)ScriptStackTrace: $(ErrMsgScriptStackTrace)$([Environment]::NewLine)--------------------$([Environment]::NewLine)ErrorDetails: $(ErrMsgErrorDetails)$([Environment]::NewLine)--------------------$([Environment]::NewLine)Exception: $(ErrMsgException)";
     Stop-Transcript;
-    # Send-ToEmail-Error  -email "roes@hcpro.com.au" -subject "Script Error (${ScriptName})" -body "$ErrorBody" -AttFile "$LogFile";
-    # $htmltext = "From: a.wirthy@gmail.com$([Environment]::NewLine)To: a.wirthy@gmail.com$([Environment]::NewLine)Subject: Script Error ($(ScriptName))$([Environment]::NewLine)${ErrorBody}";
     $htmltext = "${ErrorBody}";
     Out-File -FilePath "/config/scripterroremail.txt" -InputObject $htmltext;
     Break
