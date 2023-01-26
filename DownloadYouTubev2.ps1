@@ -8,19 +8,6 @@ Set-StrictMode -Version 2
 
 # python3 -m pip install -U yt-dlp
 
-function Send-ToEmail([string]$email,[string]$subject,[string]$body){
-
-    curl --url 'smtps://smtp.gmail.com:465' --ssl-reqd --mail-from 'a.wirthy@gmail.com' --mail-rcpt "${email}" --user 'a.wirthy@gmail.com:vtdviddmjlkyqcuf' -F from='a.wirthy@gmail.com' -F to=a.wirthy@gmail.com -H "Subject: ${subject}" --form-string html="${body}";
-    write-host "Mail Sent" ; 
- }
-
-function Send-ToEmail-Error([string]$email,[string]$subject,[string]$body,[string]$AttFile){
-    curl --url 'smtps://smtp.gmail.com:465' --ssl-reqd --mail-from 'a.wirthy@gmail.com' --mail-rcpt 'a.wirthy@gmail.com' --user 'a.wirthy@gmail.com:vtdviddmjlkyqcuf' -F from='a.wirthy@gmail.com' -F to=a.wirthy@gmail.com -H "Subject: ${subject}" --form-string html="${body}" -F attachment="@${AttFile}";
-    # --upload-file "$AttFile"
-
-    Write-to_Log -title "Email Sent" -content "Sent";
- }
-
 function Write-to_Log([string]$title,[string]$content){
     $CurrentDate = (Get-Date -format "dd/MM/yyyy hh:mm tt");
     write-host "${CurrentDate} - ${title}: ${content}"
@@ -65,7 +52,7 @@ function Create_RSS_v1([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                     $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                     Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
                     # cat /config/pushovernotify.txt | msmtp -a gmail mphfckm6ji@pomail.net
-                    cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                    #cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
                     # $FileToChangeDate = Get-Item "/data/rss/podcasts/${ChannelID}/${VideoURL}";
                     # $FileToChangeDate.LastWriteTime = (get-date);
                     # $FileToChangeDate.LastWriteTime = (get-date);
@@ -103,7 +90,7 @@ function Create_RSS_v1([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                     $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                     Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
                     # cat /config/pushovernotify.txt | msmtp -a gmail mphfckm6ji@pomail.net
-                    cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                    #cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
                 }
             }
         }
@@ -166,13 +153,13 @@ function Create_RSS([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                             $ytvideodescription = $ytvideodescription.replace($([Environment]::NewLine),"<br />");
                             $ytvideodescription = "<p>${ytvideodescription}</p>";
                         }
-                        cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                        #cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
                         # Remove-Item -LiteralPath $filepath -Force;
                         $txtRSS = "</item><item>$([Environment]::NewLine)<title><![CDATA[${ytvideotitle}]]></title>$([Environment]::NewLine)<link>http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}</link>$([Environment]::NewLine)<description><![CDATA[${ytvideodescription}]]></description>$([Environment]::NewLine)<dc:creator xmlns:dc=""http://purl.org/dc/elements/1.1/"">${ChannelID}</dc:creator>$([Environment]::NewLine)<pubDate>${pubDate}</pubDate>$([Environment]::NewLine)<guid isPermaLink=""false"">${guid}</guid>$([Environment]::NewLine)<enclosure url=""http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}"" length=""0"" type=""video/mp4""/>$([Environment]::NewLine)";
                     } else {
                         $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                         Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
-                        cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                        #cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
                         $txtRSS = "</item><item>$([Environment]::NewLine)<title>${strTitle}</title>$([Environment]::NewLine)<link>http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}</link>$([Environment]::NewLine)<description><![CDATA[${strDescription}]]></description>$([Environment]::NewLine)<dc:creator xmlns:dc=""http://purl.org/dc/elements/1.1/"">${ChannelID}</dc:creator>$([Environment]::NewLine)<pubDate>${pubDate}</pubDate>$([Environment]::NewLine)<guid isPermaLink=""false"">${guid}</guid>$([Environment]::NewLine)<enclosure url=""http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}"" length=""0"" type=""video/mp4""/>$([Environment]::NewLine)";
                     }
                     #
@@ -245,13 +232,13 @@ function Create_RSS([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder){
                             $ytvideodescription = "<p>${ytvideodescription}</p>";
                             $htmltext = "<html><body>$($ytvideo.title)<br /><br />--------------------------------------------<br /><br />${ytvideodescription}</body></html>";
                         }
-                        cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                        #cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
                         Remove-Item -LiteralPath $filepath -Force;
                         $txtRSS = "</item><item>$([Environment]::NewLine)<title><![CDATA[${ytvideotitle}]]></title>$([Environment]::NewLine)<link>http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}</link>$([Environment]::NewLine)<description><![CDATA[${ytvideodescription}]]></description>$([Environment]::NewLine)<dc:creator xmlns:dc=""http://purl.org/dc/elements/1.1/"">${ChannelID}</dc:creator>$([Environment]::NewLine)<pubDate>${pubDate}</pubDate>$([Environment]::NewLine)<guid isPermaLink=""false"">${guid}</guid>$([Environment]::NewLine)<enclosure url=""http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}"" length=""0"" type=""video/mp3""/>$([Environment]::NewLine)";
                     } else {
                         $htmltext = "${strTitle}$([Environment]::NewLine)$([Environment]::NewLine)---------------------------------------------------------------$([Environment]::NewLine)$([Environment]::NewLine)${strDescription}";
                         Out-File -FilePath "/config/pushovernotify.txt" -InputObject $htmltext;
-                        cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                        #cat "/config/pushovernotify.txt" | mutt -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
                         $txtRSS = "</item><item>$([Environment]::NewLine)<title>${strTitle}</title>$([Environment]::NewLine)<link>http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}</link>$([Environment]::NewLine)<description><![CDATA[${strDescription}]]></description>$([Environment]::NewLine)<dc:creator xmlns:dc=""http://purl.org/dc/elements/1.1/"">${ChannelID}</dc:creator>$([Environment]::NewLine)<pubDate>${pubDate}</pubDate>$([Environment]::NewLine)<guid isPermaLink=""false"">${guid}</guid>$([Environment]::NewLine)<enclosure url=""http://10.0.0.205:8383/podcasts/${ChannelID}/${VideoURL}"" length=""0"" type=""video/mp3""/>$([Environment]::NewLine)";
                     }
                     
@@ -492,7 +479,7 @@ function Create_RSS_v3([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder,[
                 $htmltext = "<html><body>${ytvideo_title}}<br /><br />--------------------------------------------<br /><br />${ytvideo_description}</body></html>";
                 Out-File -FilePath "/config/json/pushovernotify2.txt" -InputObject $htmltext -Force;
                 
-                cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                #cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
             }
         }
     }
@@ -532,7 +519,7 @@ function NotifyYouTube([string]$URL){
             $ytvideoid = $($ytvideo.id);
             $ytvideothumbnail = $($ytvideo.thumbnail);
         }
-        cat "/config/json/pushovernotify.txt" | mutt -a "/config/json/maxresdefault.jpg" -s "YouTube Video Uploaded (${ytvideouploader})" -- dzfugv4ncm@pomail.net;
+        #cat "/config/json/pushovernotify.txt" | mutt -a "/config/json/maxresdefault.jpg" -s "YouTube Video Uploaded (${ytvideouploader})" -- dzfugv4ncm@pomail.net;
 
         Add-Content -LiteralPath "/config/json/youtube-dl-notify.txt" -Value "youtube ${ytvideoid}";
         Remove-Item -LiteralPath $filepath -Force;
@@ -696,6 +683,5 @@ Catch {
     # $htmltext = "From: a.wirthy@gmail.com$([Environment]::NewLine)To: a.wirthy@gmail.com$([Environment]::NewLine)Subject: Script Error ($(ScriptName))$([Environment]::NewLine)${ErrorBody}";
     $htmltext = "${ErrorBody}";
     Out-File -FilePath "/config/scripterroremail.txt" -InputObject $htmltext;
-    cat "/config/scripterroremail.txt" | mutt -a "$(LogFile)" -s "Script Error (${ScriptName})" -- a.wirthy@gmail.com;
     Break
 }
