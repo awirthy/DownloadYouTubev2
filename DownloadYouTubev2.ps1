@@ -228,7 +228,7 @@ function Create_RSS_v3([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder,[
                 $htmltext = "<html><body>${ytvideo_title}}<br /><br />--------------------------------------------<br /><br />${ytvideo_description}</body></html>";
                 Out-File -FilePath "/config/json/pushovernotify2.txt" -InputObject $htmltext -Force;
                 
-                #cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
+                cat "/config/json/pushovernotify2.txt" | mutt -a "/config/json/maxresdefault2.jpg" -s "RSS Podcast Downloaded (${ChannelID})" -- mphfckm6ji@pomail.net;
             }
         }
     }
@@ -268,7 +268,7 @@ function NotifyYouTube([string]$URL){
             $ytvideoid = $($ytvideo.id);
             $ytvideothumbnail = $($ytvideo.thumbnail);
         }
-        #cat "/config/json/pushovernotify.txt" | mutt -a "/config/json/maxresdefault.jpg" -s "YouTube Video Uploaded (${ytvideouploader})" -- dzfugv4ncm@pomail.net;
+        cat "/config/json/pushovernotify.txt" | mutt -a "/config/json/maxresdefault.jpg" -s "YouTube Video Uploaded (${ytvideouploader})" -- dzfugv4ncm@pomail.net;
 
         Add-Content -LiteralPath "/config/json/youtube-dl-notify.txt" -Value "youtube ${ytvideoid}";
         Remove-Item -LiteralPath $filepath -Force;
@@ -382,22 +382,22 @@ Try {
     # ─── NOTIFYYOUTUBE ──────────────────────────────────────────────────────────────
     #
 
-    # NotifyYouTube -URL "https://www.youtube.com/user/PlayStationAccess/streams";
-    # NotifyYouTube -URL "https://www.youtube.com/c/ChilledChaosGAME/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/@PhilosophyInsights/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/@PlayStationAU/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/@ReasonTV/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/c/JordanPetersonVideos/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/@LinusTechTips/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/c/NateTheLawyer/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/c/HoegLaw/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/c/BruceGreene/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/c/LawrenceSonntag/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/c/Drivetribe/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/@ServeTheHomeVideo/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/@JonSandman/videos";
-    # NotifyYouTube -URL "https://www.youtube.com/@HogwartsLegacy/videos";
-    # Write-to_Log -title "NotifyYouTube" -content "Finished";
+    NotifyYouTube -URL "https://www.youtube.com/user/PlayStationAccess/streams";
+    NotifyYouTube -URL "https://www.youtube.com/c/ChilledChaosGAME/videos";
+    NotifyYouTube -URL "https://www.youtube.com/@PhilosophyInsights/videos";
+    NotifyYouTube -URL "https://www.youtube.com/@PlayStationAU/videos";
+    NotifyYouTube -URL "https://www.youtube.com/@ReasonTV/videos";
+    NotifyYouTube -URL "https://www.youtube.com/c/JordanPetersonVideos/videos";
+    NotifyYouTube -URL "https://www.youtube.com/@LinusTechTips/videos";
+    NotifyYouTube -URL "https://www.youtube.com/c/NateTheLawyer/videos";
+    NotifyYouTube -URL "https://www.youtube.com/c/HoegLaw/videos";
+    NotifyYouTube -URL "https://www.youtube.com/c/BruceGreene/videos";
+    NotifyYouTube -URL "https://www.youtube.com/c/LawrenceSonntag/videos";
+    NotifyYouTube -URL "https://www.youtube.com/c/Drivetribe/videos";
+    NotifyYouTube -URL "https://www.youtube.com/@ServeTheHomeVideo/videos";
+    NotifyYouTube -URL "https://www.youtube.com/@JonSandman/videos";
+    NotifyYouTube -URL "https://www.youtube.com/@HogwartsLegacy/videos";
+    Write-to_Log -title "NotifyYouTube" -content "Finished";
 
     # 
     # ─── END CODE ───────────────────────────────────────────────────────────────────
@@ -430,5 +430,6 @@ Catch {
     Stop-Transcript;
     $htmltext = "${ErrorBody}";
     Out-File -FilePath "/config/scripterroremail.txt" -InputObject $htmltext;
+	cat "/config/scripterroremail.txt" | mutt -a "$(LogFile)" -s "Script Error (${ScriptName})" -- a.wirthy@gmail.com;
     Break
 }
