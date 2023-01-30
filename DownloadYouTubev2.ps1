@@ -233,7 +233,46 @@ function Create_RSS_v3([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder,[
         }
     }
 
-    find "/data/podcasts/${ChannelID}" -type f -ctime +5 -delete;
+    #find "/data/podcasts/${ChannelID}" -type f -ctime +5 -delete;
+	$Files_ToDelete = (Get-Date).AddDays(-7);
+	# $Files_ToDelete = (Get-Date).AddHours(-2);
+	$ListFiles = Get-ChildItem -Path "/data/podcasts/${ChannelID}/*.info.json"  | Where-Object { $_.CreationTime -le $Files_ToDelete };
+
+	foreach ($JSONItem in $ListFiles) {
+		$filename = $JSONItem.name;
+		$filename_FullName = $JSONItem.FullName;
+		$filename_parent = [System.IO.Path]::GetDirectoryName($filename_FullName);
+		$filename_info = [System.IO.Path]::GetFileNameWithoutExtension($JSONItem.FullName);
+		$filename_noext = [System.IO.Path]::GetFileNameWithoutExtension($filename_info);
+		$filename_json = "${filename_FullName}";
+		$filename_desc = "${filename_parent}/${filename_noext}.description";
+		$filename_mp4 = "${filename_parent}/${filename_noext}.mp4";
+		$filename_mp3 = "${filename_parent}/${filename_noext}.mp3";
+
+		Write-to_Log -title "filename_noext" -content "$filename_noext";
+		Write-to_Log -title "filename_json" -content "$filename_json";
+		Write-to_Log -title "filename_desc" -content "$filename_desc";
+		Write-to_Log -title "filename_mp4" -content "$filename_mp4";
+		Write-to_Log -title "filename_mp3" -content "$filename_mp3";
+		Write-to_Log -title "filename_parent" -content "$filename_parent";
+		
+		$filexists = [System.IO.File]::Exists("$filename_json");
+		Write-to_Log -title "filexists (filename_json)" -content "$filexists";
+		if ($filexists -eq $true) {Write-to_Log -title "Deleted File" -content "filename_json";}
+		if ($filexists -eq $true) {rm "$filename_json";}
+		$filexists = [System.IO.File]::Exists("$filename_desc");
+		Write-to_Log -title "filexists (filename_desc)" -content "$filexists";
+		if ($filexists -eq $true) {Write-to_Log -title "Deleted File" -content "filename_desc";}
+		if ($filexists -eq $true) {rm "$filename_desc";}
+		$filexists = [System.IO.File]::Exists("$filename_mp4");
+		Write-to_Log -title "filexists (filename_mp4)" -content "$filexists";
+		if ($filexists -eq $true) {Write-to_Log -title "Deleted File" -content "filename_mp4";}
+		if ($filexists -eq $true) {rm "$filename_mp4";}
+		$filexists = [System.IO.File]::Exists("$filename_mp3");
+		Write-to_Log -title "filexists (filename_mp3)" -content "$filexists";
+		if ($filexists -eq $true) {Write-to_Log -title "Deleted File" -content "filename_mp3";}
+		if ($filexists -eq $true) {rm "$filename_mp3";}
+	}
  }
 
 function NotifyYouTube([string]$URL){
