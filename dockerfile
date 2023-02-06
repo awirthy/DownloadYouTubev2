@@ -15,7 +15,7 @@ RUN mkdir -p /opt/microsoft/powershell/7
 RUN tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7
 RUN chmod +x /opt/microsoft/powershell/7/pwsh
 RUN ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
-RUN wget -O /tmp/DownloadYouTubev2.tar.gz https://github.com/awirthy/DownloadYouTubev2/archive/refs/tags/v0.20.0.tar.gz
+RUN wget -O /tmp/DownloadYouTubev2.tar.gz https://github.com/awirthy/DownloadYouTubev2/archive/refs/tags/v0.20.1.tar.gz
 RUN mkdir -p /opt/DownloadYouTubev2
 RUN tar zxf /tmp/DownloadYouTubev2.tar.gz -C /opt/DownloadYouTubev2
 	###### install mutt
@@ -23,8 +23,8 @@ RUN apk --no-cache add mutt
 	###### install cron
 RUN apk add --update bash
 RUN echo "#!/bin/sh" >> /etc/periodic/15min/DownloadYouTubev2
-RUN echo "/opt/DownloadYouTubev2/DownloadYouTubev2-0.20.0/DownloadYouTubev2.sh" >> /etc/periodic/15min/DownloadYouTubev2
-RUN chmod 755 /opt/DownloadYouTubev2/DownloadYouTubev2-0.20.0/DownloadYouTubev2.sh
+RUN echo "/opt/DownloadYouTubev2/DownloadYouTubev2-0.20.1/DownloadYouTubev2.sh" >> /etc/periodic/15min/DownloadYouTubev2
+RUN chmod 755 /opt/DownloadYouTubev2/DownloadYouTubev2-0.20.1/DownloadYouTubev2.sh
 RUN chmod 755 /etc/periodic/15min/DownloadYouTubev2
 CMD ["crond", "-f","-l","8"]
     

@@ -13,6 +13,18 @@ function Write-to_Log([string]$title,[string]$content){
     write-host "${CurrentDate} - ${title}: ${content}"
     # echo "${CurrentDate} - ${title}: ${content}";
  }
+ 
+function IsValidEmail { 
+    param([string]$EmailAddress)
+
+    try {
+        $null = [mailaddress]$EmailAddress
+        return $true
+    }
+    catch {
+        return $false
+    }
+}
 
 function Create_RSS_v3([string]$ChannelID,[string]$RSSXML,[string]$MediaFolder,[string]$YouTubeURL,[string]$FileFormat,[string]$DownloadArchive,[string]$FileQuality,[string]$ChannelThumbnail){
     # yt-dlp -v -o "/config/json/videos/%(title)s_[%(id)s].%(ext)s" --skip-download -I 1:5 --write-info-json --no-write-playlist-metafiles --restrict-filenames --download-archive "/config/json/youtube-dl-notify.txt" --add-metadata --merge-output-format mp4 --format "best" --abort-on-error --abort-on-unavailable-fragment --no-overwrites --continue "${URL}";
