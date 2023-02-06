@@ -314,6 +314,346 @@ function NotifyYouTube([string]$URL){
     }
 }
 
+function Load_Settings([string]$SettingsPath){
+    <# -------- TO RUN -------- #>
+    # pwsh /config/read_settings.ps1  >> /proc/1/fd/1;
+
+    # Variables
+    $global:NotificationEmail = "";
+    $global:MediaFolder = "";
+    $global:PodcastName = "";
+    $global:ChannelID = "";
+    $global:YouTubeURL = "";
+    $global:FileFormat = "";
+    $global:DownloadArchive = "";
+    $global:FileQuality = "";
+    $global:ChannelThumbnail = "";
+    $global:NotifyName = "";
+    $global:NotifyYouTubeURL = "";
+    $Valid_ChannelID = "";
+    $Valid_ChannelThumbnail = "";
+    $Valid_DownloadArchive = "";
+    $Valid_Email = "";
+    $Valid_FileFormat = "";
+    $Valid_MediaFolder = "";
+    $Valid_PodcastName = "";
+    $Valid_YouTubeURL = "";
+    $HTTP_Request = "";
+    $HTTP_Response = "";
+    $HTTP_Status = "";
+    $Valid_Settings = $true;
+    $Valid_XML = $true;
+
+    # -----------------------------------------
+    # 
+    # Validate XML Settings
+    # 
+    # -----------------------------------------
+
+    Write-Host "----------------------------------------";
+    Write-to_Log -title "SettingsPath" -content "$SettingsPath";
+    $TestPath = Test-Path $SettingsPath;
+    Write-to_Log -title "Settings Path Valid" -content "$TestPath";
+    if ($TestPath -eq $true) {
+        try {
+            [xml]$XML_Data = Get-Content $SettingsPath;
+        } catch {
+            $Valid_XML = $false;
+            Write-to_Log -title "Valid_XML" -content "$Valid_XML";
+        }
+
+        if ($Valid_XML -eq $true) {
+            Write-to_Log -title "Valid_XML" -content "$Valid_XML";
+            $global:NotificationEmail = $XML_Data.Settings.Email;
+            $Valid_Email = IsValidEmail -EmailAddress $global:NotificationEmail;
+            Write-to_Log -title "Valid_Email" -content "$Valid_Email";
+
+            $global:MediaFolder = $XML_Data.Settings.MediaFolder;
+            $Valid_MediaFolder = Test-Path $global:MediaFolder;
+            Write-to_Log -title "Valid_MediaFolder" -content "$Valid_MediaFolder";
+            Write-to_Log -title "MediaFolder" -content "$($global:MediaFolder)";
+
+            if (($Valid_Email -eq $true) -and ($Valid_MediaFolder -eq $true)) {
+
+                # -----------------------------------------
+                # 
+                # Loop through Podcasts to Download
+                # 
+                # -----------------------------------------
+
+                try {
+                    $PodcastsDownload = $XML_Data.Settings.PodcastsDownload.Podcast;
+                    Write-Host "----------------------------------------";
+                    Write-to_Log -title "Download Files" -content "----------------------------------------";
+                    Write-Host "----------------------------------------";
+
+                    Write-to_Log -title "PodcastsDownload Count" -content "$($PodcastsDownload.Length)";
+                    foreach ($Podcast in $PodcastsDownload) {
+                        $global:PodcastName = $Podcast.Name;
+                        $global:ChannelID = $Podcast.ChannelID;
+                        $global:YouTubeURL = $Podcast.YouTubeURL;
+                        $global:FileFormat = $Podcast.FileFormat;
+                        $global:DownloadArchive = $Podcast.DownloadArchive;
+                        $global:FileQuality = $Podcast.FileQuality;
+                        $global:ChannelThumbnail = $Podcast.ChannelThumbnail;
+
+                        <# ====================================================== #>
+                        <# ================ VALIDATE PODCAST DATA =============== #>
+                        <# ====================================================== #>
+
+                        Write-to_Log -title "Start Validate Data" -content "----------------------------------------";
+
+                        <# ~~~~~~~~~ Validate ChannelName ~~~~~~~~ #>
+
+                        $pat = "^[a-zA-Z0-9\s_]+$";
+                        # $pat = "^[a-zA-Z0-9_]+$";
+                        $Valid_PodcastName = $($global:PodcastName) -match $pat;
+                        Write-to_Log -title "Valid_PodcastName" -content "$Valid_PodcastName";
+
+                        <# ~~~~~~~~~~ Validate ChannelID ~~~~~~~~~ #>
+
+                        # $pat = "^[a-zA-Z0-9\s_]+$";
+                        $pat = "^[a-zA-Z0-9_]+$";
+                        $Valid_ChannelID = $($global:ChannelID) -match $pat;
+                        Write-to_Log -title "Valid_ChannelID" -content "$Valid_ChannelID";
+
+                        <# ~~~~~~~~~ Validate YouTubeURL ~~~~~~~~~ #>
+
+                        try {
+                            $HTTP_Request = [System.Net.WebRequest]::Create($global:YouTubeURL);
+                            $HTTP_Response = $HTTP_Request.GetResponse();
+                            $HTTP_Status = [int]$HTTP_Response.StatusCode;
+    
+                            If ($HTTP_Status -eq 200) {
+                                # Write-Host "Site is OK!"
+                                $Valid_YouTubeURL = $true;
+                                Write-to_Log -title "Valid_YouTubeURL" -content "Site is OK!";
+                            }
+                            Else {
+                                $Valid_YouTubeURL = $false;
+                                Write-to_Log -title "Valid_YouTubeURL" -content "The Site may be down, please check!";
+                            }   
+                        }
+                        catch {
+                            $Valid_YouTubeURL = $false;
+                            Write-to_Log -title "Valid_YouTubeURL" -content "The Site may be down, please check!";
+                        }
+
+                        # Finally, we clean up the http request by closing it.
+                        If ($HTTP_Response -eq $null) { } 
+                        Else { $HTTP_Response.Close() }
+
+                        Write-to_Log -title "Valid_YouTubeURL" -content "$Valid_YouTubeURL";
+
+                        <# ~~~~~~~~~ Validate FileFormat ~~~~~~~~~ #>
+
+                        if (($global:FileFormat -eq "MP4") -or ($global:FileFormat -eq "MP3")) {
+                            $Valid_FileFormat = $true;
+                            Write-to_Log -title "Valid_FileFormat" -content "$Valid_FileFormat";
+                        } else {
+                            $Valid_FileFormat = $false;
+                            Write-to_Log -title "Valid_FileFormat" -content "$Valid_FileFormat";
+                        }
+
+                        <# ~~~~~~~ Validate DownloadArchive ~~~~~~ #>
+
+                        $testpath = Test-Path $($global:DownloadArchive);
+                        Write-to_Log -title "Test Path DownloadArchive" -content "$testpath";
+
+                        if ($testpath -eq $false) {
+                            $Valid_DownloadArchive = $false;
+                            try {
+                                touch $global:DownloadArchive;
+                                $Valid_DownloadArchive = $true;
+                            }
+                            catch {
+                                $Valid_DownloadArchive = $false;
+                                Write-to_Log -title "Valid_DownloadArchive" -content "Invalid File Path Format";
+                            }
+
+                        } else {
+                            $Valid_DownloadArchive = $true;
+                        }
+                        Write-to_Log -title "Valid_DownloadArchive" -content "$Valid_DownloadArchive";
+
+                        <# ~~~~~~ Validate ChannelThumbnail ~~~~~~ #>
+
+                        if ($global:ChannelThumbnail -ne "") {
+                            try {
+                                $HTTP_Request = [System.Net.WebRequest]::Create($global:ChannelThumbnail);
+                                $HTTP_Response = $HTTP_Request.GetResponse();
+                                $HTTP_Status = [int]$HTTP_Response.StatusCode;
+        
+                                If ($HTTP_Status -eq 200) {
+                                    # Write-Host "Site is OK!"
+                                    $Valid_ChannelThumbnail = $true;
+                                    Write-to_Log -title "Valid_ChannelThumbnail" -content "Site is OK!";
+                                }
+                                Else {
+                                    $Valid_ChannelThumbnail = $false;
+                                    Write-to_Log -title "Valid_ChannelThumbnail" -content "The Site may be down, please check!";
+                                }   
+                            }
+                            catch {
+                                $Valid_ChannelThumbnail = $false;
+                                Write-to_Log -title "Valid_ChannelThumbnail" -content "The Site may be down, please check!";
+                            }
+    
+                            # Finally, we clean up the http request by closing it.
+                            If ($HTTP_Response -eq $null) { } 
+                            Else { $HTTP_Response.Close() }
+                        } else {
+                            $Valid_ChannelThumbnail = $true;
+                        }
+                        Write-to_Log -title "Valid_ChannelThumbnail" -content "$Valid_ChannelThumbnail";
+
+                        <# ------------------------ #>
+
+                        Write-to_Log -title "End Validate Data" -content "----------------------------------------";
+
+                        if (($Valid_PodcastName -eq $true) -and ($Valid_ChannelID -eq $true) -and ($Valid_YouTubeURL -eq $true) -and ($Valid_FileFormat -eq $true) -and ($Valid_DownloadArchive -eq $true) -and ($Valid_ChannelThumbnail -eq $true)) {
+                            Write-to_Log -title "Valid Data" -content "----------------------------------------";
+                            Write-to_Log -title "PodcastName" -content "$($global:PodcastName)";
+                            Write-to_Log -title "ChannelID" -content "$($global:ChannelID)";
+                            Write-to_Log -title "YouTubeURL" -content "$($global:YouTubeURL)";
+                            Write-to_Log -title "FileFormat" -content "$($global:FileFormat)";
+                            Write-to_Log -title "DownloadArchive" -content "$($global:DownloadArchive)";
+                            Write-to_Log -title "FileQuality" -content "$($global:FileQuality)";
+                            Write-to_Log -title "ChannelThumbnail" -content "$($global:ChannelThumbnail)";
+
+                            # RUN YT-DLP
+                            Create_RSS_v3 -ChannelID "$($global:ChannelID)" -RSSXML "$($global:ChannelID)RSS" -MediaFolder "$($global:MediaFolder)" -YouTubeURL "$($global:YouTubeURL)" -FileFormat "$($global:FileFormat)" -DownloadArchive "$($global:DownloadArchive)" -FileQuality "$($global:FileQuality)" -ChannelThumbnail "$($global:ChannelThumbnail)";
+                            Write-to_Log -title "Downloaded Video Files for" -content "$($global:PodcastName)";
+                            Write-to_Log -title "Create_RSS_v3" -content "Finished";
+                        }
+                    }
+                }
+                catch {
+                        $ScriptName = $MyInvocation.InvocationName;
+                        $ErrMsgCategoryInfo = $_.CategoryInfo;
+                        $ErrMsgTargetObject = $_.TargetObject;
+                        $ErrMsgErrorDetails = $_.ErrorDetails;
+                        $ErrMsgException = $_.Exception;
+                        $ErrMsgInvocationInfo = $_.InvocationInfo;
+                        $ErrMsgScriptStackTrace = $_.ScriptStackTrace;
+                        Write-to_Log -title "ERROR" -content "***********************************     ERROR (Loop through Podcasts to Download)     ***********************************";
+                        Write-to_Log -title "CategoryInfo" -content "$ErrMsgCategoryInfo";
+                        Write-to_Log -title "TargetObject" -content "$ErrMsgTargetObject";
+                        Write-to_Log -title "InvocationInfo" -content "$ErrMsgInvocationInfo";
+                        Write-to_Log -title "ScriptStackTrace" -content "$ErrMsgScriptStackTrace";
+                        Write-to_Log -title "ErrorDetails" -content "$ErrMsgErrorDetails";
+                        Write-to_Log -title "Exception" -content "$ErrMsgException";
+                }
+
+                <# ====================================================== #>
+                <# =========== Loop Through YouTube to Notify =========== #>
+                <# ====================================================== #>
+                try {
+                    $PodcastsNotify = $XML_Data.Settings.PodcastsNotifty.Podcast;
+                    
+                    Write-Host "----------------------------------------";
+                    Write-to_Log -title "Notify Files" -content "----------------------------------------";
+                    Write-Host "----------------------------------------";
+
+                    Write-to_Log -title "PodcastsNotify Count" -content "$($PodcastsNotify.Length)";
+                    foreach ($Podcast in $PodcastsNotify) {
+                        $global:Notify_PodcastName = $Podcast.Name;
+                        $global:Notify_YouTubeURL = $Podcast.YouTubeURL;
+
+                        <# ====================================================== #>
+                        <# ================ VALIDATE PODCAST DATA =============== #>
+                        <# ====================================================== #>
+
+                        Write-to_Log -title "Start Validate Data" -content "----------------------------------------";
+
+                        <# ~~~~~~~~~ Validate ChannelName ~~~~~~~~ #>
+
+                        $pat = "^[a-zA-Z0-9\s_]+$";
+                        # $pat = "^[a-zA-Z0-9_]+$";
+                        $Valid_PodcastName = $($global:Notify_PodcastName) -match $pat;
+                        Write-to_Log -title "Valid_PodcastName" -content "$Valid_PodcastName";
+
+                        <# ~~~~~~~~~ Validate YouTubeURL ~~~~~~~~~ #>
+
+                        try {
+                            $HTTP_Request = [System.Net.WebRequest]::Create($global:Notify_YouTubeURL);
+                            $HTTP_Response = $HTTP_Request.GetResponse();
+                            $HTTP_Status = [int]$HTTP_Response.StatusCode;
+    
+                            If ($HTTP_Status -eq 200) {
+                                # Write-Host "Site is OK!"
+                                $Valid_YouTubeURL = $true;
+                                Write-to_Log -title "Valid_YouTubeURL" -content "Site is OK!";
+                            }
+                            Else {
+                                $Valid_YouTubeURL = $false;
+                                Write-to_Log -title "Valid_YouTubeURL" -content "The Site may be down, please check!";
+                            }   
+                        }
+                        catch {
+                            $Valid_YouTubeURL = $false;
+                            Write-to_Log -title "Valid_YouTubeURL" -content "The Site may be down, please check!";
+                        }
+
+                        # Finally, we clean up the http request by closing it.
+                        If ($HTTP_Response -eq $null) { } 
+                        Else { $HTTP_Response.Close() }
+
+                        Write-to_Log -title "Valid_YouTubeURL" -content "$Valid_YouTubeURL";
+
+                        if (($Valid_PodcastName -eq $true) -and ($Valid_YouTubeURL -eq $true)) {
+                            Write-to_Log -title "Valid Data" -content "----------------------------------------";
+                            Write-to_Log -title "PodcastName" -content "$($global:Notify_PodcastName)";
+                            Write-to_Log -title "YouTubeURL" -content "$($global:Notify_YouTubeURL)";
+
+                            # Write-to_Log -title "Proceed to Notify Files ($($global:Notify_PodcastName))" -content "----------------------------------------";
+                            # Run Notify Files
+
+                            NotifyYouTube -URL "$($global:Notify_YouTubeURL)";
+                            Write-to_Log -title "Notify Video Files for" -content "$($global:Notify_PodcastName)";
+                            Write-to_Log -title "NotifyYouTube" -content "Finished";
+                        }
+                    }
+                }
+                catch {
+                        $ScriptName = $MyInvocation.InvocationName;
+                        $ErrMsgCategoryInfo = $_.CategoryInfo;
+                        $ErrMsgTargetObject = $_.TargetObject;
+                        $ErrMsgErrorDetails = $_.ErrorDetails;
+                        $ErrMsgException = $_.Exception;
+                        $ErrMsgInvocationInfo = $_.InvocationInfo;
+                        $ErrMsgScriptStackTrace = $_.ScriptStackTrace;
+                        Write-to_Log -title "ERROR" -content "***********************************     ERROR (Loop Through YouTube to Notify)     ***********************************";
+                        Write-to_Log -title "CategoryInfo" -content "$ErrMsgCategoryInfo";
+                        Write-to_Log -title "TargetObject" -content "$ErrMsgTargetObject";
+                        Write-to_Log -title "InvocationInfo" -content "$ErrMsgInvocationInfo";
+                        Write-to_Log -title "ScriptStackTrace" -content "$ErrMsgScriptStackTrace";
+                        Write-to_Log -title "ErrorDetails" -content "$ErrMsgErrorDetails";
+                        Write-to_Log -title "Exception" -content "$ErrMsgException";
+                }
+                
+            } else {
+                if ($Valid_Email -eq $false) {
+                    Write-to_Log -title "ERROR" -content "----------------------------------------";
+                    Write-to_Log -title "ERROR" -content "Invalid Email Address";
+                    Write-to_Log -title "ERROR" -content "----------------------------------------";
+                    
+                }
+
+                if ($Valid_MediaFolder -eq $false) {
+                    Write-to_Log -title "ERROR" -content "----------------------------------------";
+                    Write-to_Log -title "ERROR" -content "Invalid Media Folder";
+                    Write-to_Log -title "ERROR" -content "----------------------------------------";
+                }
+            }
+        } else {
+            Write-to_Log -title "ERROR" -content "----------------------------------------";
+            Write-to_Log -title "ERROR" -content "Not a valid XML file";
+            Write-to_Log -title "ERROR" -content "----------------------------------------";
+        }
+    }
+}
+
 Try {
     <# ------------------ Global Variables ------------------ #>
 
@@ -330,86 +670,86 @@ Try {
     # ─── START CODE ─────────────────────────────────────────────────────────────────
     #
 
-        # To Watch YouTube Audio
-        Create_RSS_v3 -ChannelID "To_Watch_Youtube_Audio" -RSSXML "ToDownloadAudioRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLNJTvO4HBij8Wux0m7v817mLoSbaj4l59" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-MYPLAYLIST.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj";
-        Create_RSS_v3 -ChannelID "To_Watch_Youtube_Audio" -RSSXML "ToDownloadAudioRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLNJTvO4HBij-As-16otoDkTMhSiQ0cyP_" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-MYPLAYLIST.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj";
-        Write-to_Log -title "Downloaded Video Files for" -content "To_Watch_Youtube_Audio";
+        # # To Watch YouTube Audio
+        # Create_RSS_v3 -ChannelID "To_Watch_Youtube_Audio" -RSSXML "ToDownloadAudioRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLNJTvO4HBij8Wux0m7v817mLoSbaj4l59" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-MYPLAYLIST.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj";
+        # Create_RSS_v3 -ChannelID "To_Watch_Youtube_Audio" -RSSXML "ToDownloadAudioRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLNJTvO4HBij-As-16otoDkTMhSiQ0cyP_" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-MYPLAYLIST.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj";
+        # Write-to_Log -title "Downloaded Video Files for" -content "To_Watch_Youtube_Audio";
 
-        # To Watch Youtube
-        Create_RSS_v3 -ChannelID "To_Watch_Youtube" -RSSXML "ToDownloadRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLNJTvO4HBij-9ZC97gjGR9JXObE_g_XDm" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-MYPLAYLIST.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj";
-        Write-to_Log -title "Downloaded Video Files for" -content "To_Watch_Youtube";
+        # # To Watch Youtube
+        # Create_RSS_v3 -ChannelID "To_Watch_Youtube" -RSSXML "ToDownloadRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLNJTvO4HBij-9ZC97gjGR9JXObE_g_XDm" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-MYPLAYLIST.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj";
+        # Write-to_Log -title "Downloaded Video Files for" -content "To_Watch_Youtube";
 
-        # Biographics
-        Create_RSS_v3 -ChannelID "Biographics" -RSSXML "BiographicsRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UClnDI2sdehVm1zm_LmUHsjQ/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "Biographics";
+        # # Biographics
+        # Create_RSS_v3 -ChannelID "Biographics" -RSSXML "BiographicsRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UClnDI2sdehVm1zm_LmUHsjQ/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Biographics";
 
-        # Dan Murrell
-        Create_RSS_v3 -ChannelID "Dan_Murrell" -RSSXML "DanMurrellRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCbiOAho0h23IMInURiESx1w/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "Dan_Murrell";
+        # # Dan Murrell
+        # Create_RSS_v3 -ChannelID "Dan_Murrell" -RSSXML "DanMurrellRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCbiOAho0h23IMInURiESx1w/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Dan_Murrell";
 
-        # Emergency Awesome
-        Create_RSS_v3 -ChannelID "Emergency_Awesome" -RSSXML "EmergencyAwesomeRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCDiFRMQWpcp8_KD4vwIVicw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "Emergency_Awesome";
+        # # Emergency Awesome
+        # Create_RSS_v3 -ChannelID "Emergency_Awesome" -RSSXML "EmergencyAwesomeRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCDiFRMQWpcp8_KD4vwIVicw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Emergency_Awesome";
 
-        # ERB
-        Create_RSS_v3 -ChannelID "ERB" -RSSXML "ERBRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCMu5gPmKp5av0QCAajKTMhw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "ERB";
+        # # ERB
+        # Create_RSS_v3 -ChannelID "ERB" -RSSXML "ERBRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCMu5gPmKp5av0QCAajKTMhw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "ERB";
 
-        # FilmJoy
-        Create_RSS_v3 -ChannelID "FilmJoy" -RSSXML "FilmJoyRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCEtB-nx5ngoNJWEzYa-yXBg/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "FilmJoy";
+        # # FilmJoy
+        # Create_RSS_v3 -ChannelID "FilmJoy" -RSSXML "FilmJoyRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCEtB-nx5ngoNJWEzYa-yXBg/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "FilmJoy";
 
-        # Honest Trailers
-        Create_RSS_v3 -ChannelID "Honest_Trailers" -RSSXML "HonestTrailersRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PL86F4D497FD3CACCE" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "Honest_Trailers";
+        # # Honest Trailers
+        # Create_RSS_v3 -ChannelID "Honest_Trailers" -RSSXML "HonestTrailersRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PL86F4D497FD3CACCE" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Honest_Trailers";
 
-        # PS Access
-        Create_RSS_v3 -ChannelID "PS_Access" -RSSXML "PSAccessRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/user/PlayStationAccess/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "PS_Access";
+        # # PS Access
+        # Create_RSS_v3 -ChannelID "PS_Access" -RSSXML "PSAccessRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/user/PlayStationAccess/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "PS_Access";
 
-        # Hot Ones
-        Create_RSS_v3 -ChannelID "Hot_Ones" -RSSXML "HotOnesRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLAzrgbu8gEMIIK3r4Se1dOZWSZzUSadfZ" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8DeRF1AWLlRnKZmQQWlrC6mCzdpZMnnJWbAN2tPA=s88-c-k-c0x00ffffff-no-rj";
-        Write-to_Log -title "Downloaded Video Files for" -content "Hot_Ones";
+        # # Hot Ones
+        # Create_RSS_v3 -ChannelID "Hot_Ones" -RSSXML "HotOnesRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLAzrgbu8gEMIIK3r4Se1dOZWSZzUSadfZ" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "https://yt3.ggpht.com/ytc/AMLnZu8DeRF1AWLlRnKZmQQWlrC6mCzdpZMnnJWbAN2tPA=s88-c-k-c0x00ffffff-no-rj";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Hot_Ones";
 
-        # MediaWatch
-        Create_RSS_v3 -ChannelID "MediaWatch" -RSSXML "MediaWatchRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLDTPrMoGHssBtV3J7BBLZAuY9U5UX92mt" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "https://pbs.twimg.com/profile_images/1587643154022666241/TuT-jx-f_400x400.jpg";
-        Write-to_Log -title "Downloaded Video Files for" -content "MediaWatch";
+        # # MediaWatch
+        # Create_RSS_v3 -ChannelID "MediaWatch" -RSSXML "MediaWatchRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLDTPrMoGHssBtV3J7BBLZAuY9U5UX92mt" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "https://pbs.twimg.com/profile_images/1587643154022666241/TuT-jx-f_400x400.jpg";
+        # Write-to_Log -title "Downloaded Video Files for" -content "MediaWatch";
 
-        # MegaProjects
-        Create_RSS_v3 -ChannelID "MegaProjects" -RSSXML "MegaProjectsRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UC0woBco6Dgcxt0h8SwyyOmw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "MegaProjects";
+        # # MegaProjects
+        # Create_RSS_v3 -ChannelID "MegaProjects" -RSSXML "MegaProjectsRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UC0woBco6Dgcxt0h8SwyyOmw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "MegaProjects";
 
-        # PDS
-        Create_RSS_v3 -ChannelID "PDS" -RSSXML "PDSRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UClFSU9_bUb4Rc6OYfTt5SPw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "PDS";
+        # # PDS
+        # Create_RSS_v3 -ChannelID "PDS" -RSSXML "PDSRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UClFSU9_bUb4Rc6OYfTt5SPw/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "PDS";
 
-        # Shaqtin
-        Create_RSS_v3 -ChannelID "Shaqtin" -RSSXML "ShaqtinRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLU6BYY1Lu_feVbuZEscpd6xT32zCrVrev" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "https://www.opencourt-basketball.com/wp-content/uploads/2016/06/saf.jpg";
-        Write-to_Log -title "Downloaded Video Files for" -content "Shaqtin";
+        # # Shaqtin
+        # Create_RSS_v3 -ChannelID "Shaqtin" -RSSXML "ShaqtinRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/playlist?list=PLU6BYY1Lu_feVbuZEscpd6xT32zCrVrev" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "https://www.opencourt-basketball.com/wp-content/uploads/2016/06/saf.jpg";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Shaqtin";
 
-        # thejuicemedia
-        Create_RSS_v3 -ChannelID "thejuicemedia" -RSSXML "thejuicemediaRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCKRw8GAAtm27q4R3Q0kst_g/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "thejuicemedia";
+        # # thejuicemedia
+        # Create_RSS_v3 -ChannelID "thejuicemedia" -RSSXML "thejuicemediaRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCKRw8GAAtm27q4R3Q0kst_g/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "thejuicemedia";
 
-        # Inside Games
-        Create_RSS_v3 -ChannelID "Inside_Games" -RSSXML "InsideGamesRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCFHQlasvjQ0JMOHoKOz4c0g/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "Inside_Games";
+        # # Inside Games
+        # Create_RSS_v3 -ChannelID "Inside_Games" -RSSXML "InsideGamesRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/channel/UCFHQlasvjQ0JMOHoKOz4c0g/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Inside_Games";
 
-        # Sideprojects
-        Create_RSS_v3 -ChannelID "Sideprojects" -RSSXML "SideprojectsRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/c/Sideprojects/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "Sideprojects";
+        # # Sideprojects
+        # Create_RSS_v3 -ChannelID "Sideprojects" -RSSXML "SideprojectsRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/c/Sideprojects/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Sideprojects";
 
-        # Today I Found Out
-        Create_RSS_v3 -ChannelID "Today_I_Found_Out" -RSSXML "TodayIFoundOutRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/c/Todayifoundout-official" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "Today_I_Found_Out";
+        # # Today I Found Out
+        # Create_RSS_v3 -ChannelID "Today_I_Found_Out" -RSSXML "TodayIFoundOutRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/c/Todayifoundout-official" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "Today_I_Found_Out";
 
-        # TheWestReport
-        Create_RSS_v3 -ChannelID "TheWestReport" -RSSXML "TheWestReportRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/c/TheWestReport" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "TheWestReport";
+        # # TheWestReport
+        # Create_RSS_v3 -ChannelID "TheWestReport" -RSSXML "TheWestReportRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/c/TheWestReport" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "TheWestReport";
 
-        # CinemaTherapy
-        Create_RSS_v3 -ChannelID "CinemaTherapy" -RSSXML "CinemaTherapyRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/@CinemaTherapyShow/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
-        Write-to_Log -title "Downloaded Video Files for" -content "CinemaTherapy";
+        # # CinemaTherapy
+        # Create_RSS_v3 -ChannelID "CinemaTherapy" -RSSXML "CinemaTherapyRSS" -MediaFolder "/data/podcasts/" -YouTubeURL "https://www.youtube.com/@CinemaTherapyShow/videos" -FileFormat "mp4" -DownloadArchive "/config/youtube-dl-archive-ALL.txt" -FileQuality "best" -ChannelThumbnail "";
+        # Write-to_Log -title "Downloaded Video Files for" -content "CinemaTherapy";
 
     #
     # ─── ADD TO RSS FILES ───────────────────────────────────────────────────────────
@@ -421,22 +761,29 @@ Try {
     # ─── NOTIFYYOUTUBE ──────────────────────────────────────────────────────────────
     #
 
-    NotifyYouTube -URL "https://www.youtube.com/user/PlayStationAccess/streams";
-    NotifyYouTube -URL "https://www.youtube.com/c/ChilledChaosGAME/videos";
-    NotifyYouTube -URL "https://www.youtube.com/@PhilosophyInsights/videos";
-    NotifyYouTube -URL "https://www.youtube.com/@PlayStationAU/videos";
-    NotifyYouTube -URL "https://www.youtube.com/@ReasonTV/videos";
-    NotifyYouTube -URL "https://www.youtube.com/c/JordanPetersonVideos/videos";
-    NotifyYouTube -URL "https://www.youtube.com/@LinusTechTips/videos";
-    NotifyYouTube -URL "https://www.youtube.com/c/NateTheLawyer/videos";
-    NotifyYouTube -URL "https://www.youtube.com/c/HoegLaw/videos";
-    NotifyYouTube -URL "https://www.youtube.com/c/BruceGreene/videos";
-    NotifyYouTube -URL "https://www.youtube.com/c/LawrenceSonntag/videos";
-    NotifyYouTube -URL "https://www.youtube.com/c/Drivetribe/videos";
-    NotifyYouTube -URL "https://www.youtube.com/@ServeTheHomeVideo/videos";
-    NotifyYouTube -URL "https://www.youtube.com/@JonSandman/videos";
-    NotifyYouTube -URL "https://www.youtube.com/@HogwartsLegacy/videos";
-    Write-to_Log -title "NotifyYouTube" -content "Finished";
+    # NotifyYouTube -URL "https://www.youtube.com/user/PlayStationAccess/streams";
+    # NotifyYouTube -URL "https://www.youtube.com/c/ChilledChaosGAME/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/@PhilosophyInsights/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/@PlayStationAU/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/@ReasonTV/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/c/JordanPetersonVideos/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/@LinusTechTips/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/c/NateTheLawyer/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/c/HoegLaw/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/c/BruceGreene/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/c/LawrenceSonntag/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/c/Drivetribe/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/@ServeTheHomeVideo/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/@JonSandman/videos";
+    # NotifyYouTube -URL "https://www.youtube.com/@HogwartsLegacy/videos";
+    # Write-to_Log -title "NotifyYouTube" -content "Finished";
+
+    <# ====================================================== #>
+    <# ================== Run Load Settings ================= #>
+    <# ====================================================== #>
+
+    $SettingFile = "/config/settings.xml";
+    Load_Settings -SettingsPath "$SettingFile";
 
     # 
     # ─── END CODE ───────────────────────────────────────────────────────────────────

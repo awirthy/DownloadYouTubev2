@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Settings>
+	<Email>a.wirthy@gmail.com</Email>
+	<MediaFolder>/data/podcasts/</MediaFolder>
+	<PodcastsDownload>
+        <Podcast>
+			<Name>To Watch Youtube Audio</Name>
+			<ChannelID>ToDownloadAudio</ChannelID>
+			<YouTubeURL>https://www.youtube.com/playlist?list=PLNJTvO4HBij8Wux0m7v817mLoSbaj4l59</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-MYPLAYLIST.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail>https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj</ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>To Watch Youtube Audio MP3</Name>
+			<ChannelID>ToDownloadAudio</ChannelID>
+			<YouTubeURL>https://www.youtube.com/playlist?list=PLNJTvO4HBij-As-16otoDkTMhSiQ0cyP_</YouTubeURL>
+			<FileFormat>MP3</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-MYPLAYLIST.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail>https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj</ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>To Watch Youtube Video</Name>
+			<ChannelID>ToDownload</ChannelID>
+			<YouTubeURL>https://www.youtube.com/playlist?list=PLNJTvO4HBij-9ZC97gjGR9JXObE_g_XDm</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-MYPLAYLIST.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail>https://yt3.ggpht.com/ytc/AMLnZu8TMglgWacF6opohoPRkRq24r0dPQbtamRjn0xD=s108-c-k-c0x00ffffff-no-rj</ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Biographics</Name>
+			<ChannelID>Biographics</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UClnDI2sdehVm1zm_LmUHsjQ/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Dan Murrell</Name>
+			<ChannelID>DanMurrell</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UCbiOAho0h23IMInURiESx1w/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Emergency Awesome</Name>
+			<ChannelID>EmergencyAwesome</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UCDiFRMQWpcp8_KD4vwIVicw/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Epic Rap Battles</Name>
+			<ChannelID>ERB</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UCMu5gPmKp5av0QCAajKTMhw/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>FilmJoy</Name>
+			<ChannelID>FilmJoy</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UCEtB-nx5ngoNJWEzYa-yXBg/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Honest Trailers</Name>
+			<ChannelID>HonestTrailers</ChannelID>
+			<YouTubeURL>https://www.youtube.com/playlist?list=PL86F4D497FD3CACCE</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Playstation Access</Name>
+			<ChannelID>HotOnes</ChannelID>
+			<YouTubeURL>https://www.youtube.com/user/PlayStationAccess/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Hot Ones</Name>
+			<ChannelID>PSAccess</ChannelID>
+			<YouTubeURL>https://www.youtube.com/playlist?list=PLAzrgbu8gEMIIK3r4Se1dOZWSZzUSadfZ</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>MediaWatch</Name>
+			<ChannelID>MediaWatch</ChannelID>
+			<YouTubeURL>https://www.youtube.com/playlist?list=PLDTPrMoGHssBtV3J7BBLZAuY9U5UX92mt</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>MegaProjects</Name>
+			<ChannelID>MegaProjects</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UC0woBco6Dgcxt0h8SwyyOmw/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Philip DeFranco Show</Name>
+			<ChannelID>PDS</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UClFSU9_bUb4Rc6OYfTt5SPw/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Shaqtin a Fool</Name>
+			<ChannelID>Shaqtin</ChannelID>
+			<YouTubeURL>https://www.youtube.com/playlist?list=PLU6BYY1Lu_feVbuZEscpd6xT32zCrVrev</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>thejuicemedia</Name>
+			<ChannelID>thejuicemedia</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UCKRw8GAAtm27q4R3Q0kst_g/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Inside Games</Name>
+			<ChannelID>InsideGames</ChannelID>
+			<YouTubeURL>https://www.youtube.com/channel/UCFHQlasvjQ0JMOHoKOz4c0g/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Side Projects</Name>
+			<ChannelID>Sideprojects</ChannelID>
+			<YouTubeURL>https://www.youtube.com/c/Sideprojects/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Today I Found Out</Name>
+			<ChannelID>TodayIFoundOut</ChannelID>
+			<YouTubeURL>https://www.youtube.com/c/Todayifoundout-official</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+        <Podcast>
+			<Name>Cinema Therapy</Name>
+			<ChannelID>CinemaTherapy</ChannelID>
+			<YouTubeURL>https://www.youtube.com/@CinemaTherapyShow/videos</YouTubeURL>
+			<FileFormat>MP4</FileFormat>
+			<DownloadArchive>/config/youtube-dl-archive-ALL.txt</DownloadArchive>
+			<FileQuality>best</FileQuality>
+			<ChannelThumbnail></ChannelThumbnail>
+		</Podcast>
+	</PodcastsDownload>
+	<PodcastsNotifty>
+		<Podcast>
+			<Name>PlayStation Access</Name>
+			<YouTubeURL>https://www.youtube.com/user/PlayStationAccess/streams</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Chilled Chaos</Name>
+			<YouTubeURL>https://www.youtube.com/c/ChilledChaosGAME/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Philosophy Insights</Name>
+			<YouTubeURL>https://www.youtube.com/@PhilosophyInsights/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Playstation Australia</Name>
+			<YouTubeURL>https://www.youtube.com/@PlayStationAU/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Reason</Name>
+			<YouTubeURL>https://www.youtube.com/@ReasonTV/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Jordan Peterson</Name>
+			<YouTubeURL>https://www.youtube.com/c/JordanPetersonVideos/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Nate The Lawyer</Name>
+			<YouTubeURL>https://www.youtube.com/c/NateTheLawyer/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Hoeg Law</Name>
+			<YouTubeURL>https://www.youtube.com/c/HoegLaw/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Bruce Greene</Name>
+			<YouTubeURL>https://www.youtube.com/c/BruceGreene/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Lawrence Sonntag</Name>
+			<YouTubeURL>https://www.youtube.com/c/LawrenceSonntag/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Drivetribe</Name>
+			<YouTubeURL>https://www.youtube.com/c/Drivetribe/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>ServeTheHome</Name>
+			<YouTubeURL>https://www.youtube.com/@ServeTheHomeVideo/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Jon Sandman</Name>
+			<YouTubeURL>https://www.youtube.com/@JonSandman/videos</YouTubeURL>
+		</Podcast>
+        <Podcast>
+			<Name>Hogwarts Legacy</Name>
+			<YouTubeURL>https://www.youtube.com/@HogwartsLegacy/videos</YouTubeURL>
+		</Podcast>
+	</PodcastsNotifty>
+</Settings>
