@@ -1,4 +1,4 @@
 # /etc/cron.d/ytdl
 # 
-pwsh /opt/DownloadYouTubev2/DownloadYouTubev2-0.20.1/DownloadYouTubev2.ps1  >> /proc/1/fd/1;
+pwsh /opt/DownloadYouTubev2/DownloadYouTubev2-0.20.2/DownloadYouTubev2.ps1  >> /proc/1/fd/1;
 echo "DONE"  >> /proc/1/fd/1;

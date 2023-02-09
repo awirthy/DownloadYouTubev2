@@ -18,11 +18,11 @@ function IsValidEmail {
     param([string]$EmailAddress)
 
     try {
-        $null = [mailaddress]$EmailAddress
-        return $true
+        $null = [mailaddress]$EmailAddress;
+        return $true;
     }
     catch {
-        return $false
+        return $false;
     }
 }
 
