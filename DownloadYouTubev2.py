@@ -614,7 +614,7 @@ if exist == True:
                 # ======================================================== #
 
                 Run_YTDLP(Settings_MediaFolder, Podcast_Name, Podcast_ChannelID, Podcast_FileFormat, Podcast_DownloadArchive, Podcast_FileQuality, Podcast_ChannelThumbnail, Podcast_YouTubeURL)
-                DeleteOldFiles(7,Settings_MediaFolder + Podcast_ChannelID)
+                DeleteOldFiles(7,Settings_MediaFolder + Podcast_ChannelID + "/")
 
             # ======================================================== #
             # ============== Loop through PodcastsNotify ============= #
