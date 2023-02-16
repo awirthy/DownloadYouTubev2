@@ -17,6 +17,57 @@ from email_validator import validate_email, EmailNotValidError
 #     print(x.strftime("%X")) 
 #     # print(x)
 
+def DeleteOldFiles(NumberofDays,FolderPath):        
+    # N is the number of days for which
+    # we have to check whether the file
+    # is older than the specified days or not
+    # N = 2
+    N = NumberofDays
+    # os.chdir("/data/podcasts/CinemaTherapy/")
+    os.chdir(FolderPath)
+    list_of_files = os.listdir()
+    current_time = time.time()
+
+    # "day" is the number of seconds in a day
+    day = 86400
+
+    # loop over all the files
+    for i in list_of_files:
+        # get the location of the file
+        # file_location = os.path.join(os.getcwd(), i)
+        file_location = FolderPath + i
+        current_time = time.time()
+        print("Current Time: " + str(current_time))
+        # file_time is the time when the file is modified
+        print(file_location)
+
+        pathname, extension = os.path.splitext(file_location)
+        print("extension: " + str(extension))
+        if (extension == ".description"):
+            file_desc = pathname + ".description"
+            file_mp4 = pathname + ".mp4"
+            file_mp3 = pathname + ".mp3"
+            file_json = pathname + ".json.info"
+            file_time = os.stat(file_location).st_mtime
+
+            print("file_desc: " + file_desc)
+            print("file_mp4: " + file_mp4)
+            print("file_mp3: " + file_mp3)
+            print("file_json: " + file_json)
+
+            if os.path.isfile(file_desc):
+                file_time = os.stat(file_desc).st_mtime
+                print("file_time: " + str(file_time))
+                if(file_time < current_time - day*N):
+                    print(f" Delete : " + file_desc)
+                    # os.remove(file_desc)
+                    print(f" Delete : " + file_json)
+                    # os.remove(file_json)
+                    print(f" Delete : " + file_mp3)
+                    # os.remove(file_mp3)
+                    print(f" Delete : " + file_mp4)
+                    # os.remove(file_mp4)
+
 def NotifyPushover(AppToken,nTitle,nBody,pThumbnail):
     # wget -O "/config/json/maxresdefault2.jpg" $ytvideo_thumbnail;
     # $htmltext = "<html><body>${ytvideo_title}}<br /><br />--------------------------------------------<br /><br />${ytvideo_description}</body></html>";
@@ -563,6 +614,7 @@ if exist == True:
                 # ======================================================== #
 
                 Run_YTDLP(Settings_MediaFolder, Podcast_Name, Podcast_ChannelID, Podcast_FileFormat, Podcast_DownloadArchive, Podcast_FileQuality, Podcast_ChannelThumbnail, Podcast_YouTubeURL)
+                DeleteOldFiles(7,Settings_MediaFolder + Podcast_ChannelID)
 
             # ======================================================== #
             # ============== Loop through PodcastsNotify ============= #
