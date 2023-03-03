@@ -362,9 +362,9 @@ def Run_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive, pF
                         ytvideo_uploader_url = data['uploader_url']
                         ytvideo_channel_id = data['channel_id']
                         ytvideo_channel_url = data['channel_url']
-                        ytvideo_duration = data['duration']
+                        ytvideo_duration = 0
                         ytvideo_webpage_url = data['webpage_url']
-                        ytvideo_filesize = data['filesize_approx']
+                        ytvideo_filesize = 0
                         ytvideo_thumbnail = data['thumbnail']
 
                         print("ytvideo_uid: " + ytvideo_uid)
