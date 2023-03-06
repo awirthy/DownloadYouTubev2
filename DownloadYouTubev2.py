@@ -365,7 +365,8 @@ def Run_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive, pF
                         ytvideo_duration = 0
                         ytvideo_webpage_url = data['webpage_url']
                         ytvideo_filesize = 0
-                        ytvideo_thumbnail = data['thumbnail']
+                        # ytvideo_thumbnail = data['thumbnail']
+                        ytvideo_thumbnail = "https://i.ytimg.com/vi_webp/" + ytvideo_uid + "/maxresdefault.webp"
 
                         print("ytvideo_uid: " + ytvideo_uid)
                         print("ytvideo_title: " + ytvideo_title)
