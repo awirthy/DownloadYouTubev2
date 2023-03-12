@@ -60,13 +60,13 @@ def DeleteOldFiles(NumberofDays,FolderPath):
                 print("file_time: " + str(file_time))
                 if(file_time < current_time - day*N):
                     print(f" Delete : " + file_desc)
-                    # os.remove(file_desc)
+                    os.remove(file_desc)
                     print(f" Delete : " + file_json)
-                    # os.remove(file_json)
+                    os.remove(file_json)
                     print(f" Delete : " + file_mp3)
-                    # os.remove(file_mp3)
+                    os.remove(file_mp3)
                     print(f" Delete : " + file_mp4)
-                    # os.remove(file_mp4)
+                    os.remove(file_mp4)
 
 def NotifyPushover(AppToken,nTitle,nBody,pThumbnail):
     # wget -O "/config/json/maxresdefault2.jpg" $ytvideo_thumbnail;
