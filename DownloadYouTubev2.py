@@ -59,14 +59,18 @@ def DeleteOldFiles(NumberofDays,FolderPath):
                 file_time = os.stat(file_desc).st_mtime
                 print("file_time: " + str(file_time))
                 if(file_time < current_time - day*N):
-                    print(f" Delete : " + file_desc)
-                    os.remove(file_desc)
-                    print(f" Delete : " + file_json)
-                    os.remove(file_json)
-                    print(f" Delete : " + file_mp3)
-                    os.remove(file_mp3)
-                    print(f" Delete : " + file_mp4)
-                    os.remove(file_mp4)
+                    if os.path.isfile(file_desc):
+                        print(f" Delete : " + file_desc)
+                        os.remove(file_desc)
+                    if os.path.isfile(file_mp3):
+                        print(f" Delete : " + file_mp3)
+                        os.remove(file_mp3)
+                    if os.path.isfile(file_mp4):
+                        print(f" Delete : " + file_mp4)
+                        os.remove(file_mp4)
+                    if os.path.isfile(file_json):
+                        print(f" Delete : " + file_json)
+                        os.remove(file_json)
 
 def NotifyPushover(AppToken,nTitle,nBody,pThumbnail):
     # wget -O "/config/json/maxresdefault2.jpg" $ytvideo_thumbnail;
@@ -367,6 +371,8 @@ def Run_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive, pF
                         ytvideo_filesize = 0
                         # ytvideo_thumbnail = data['thumbnail']
                         ytvideo_thumbnail = "https://i.ytimg.com/vi_webp/" + ytvideo_uid + "/maxresdefault.webp"
+                        # https://i.ytimg.com/vi_webp/wocnSQ4fsiI/maxresdefault.webp
+                        # https://i.ytimg.com/vi/wocnSQ4fsiI/maxresdefault.jpg
 
                         print("ytvideo_uid: " + ytvideo_uid)
                         print("ytvideo_title: " + ytvideo_title)
