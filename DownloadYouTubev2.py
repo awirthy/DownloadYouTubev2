@@ -684,6 +684,8 @@ def Run_RSS_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive
                                 # print("pubDate: " + pubDate)
                                 RSSItemsData = '\t\t<item>\n\t\t\t<title><![CDATA[' + ytvideo_title + ']]></title>\n\t\t\t<description><![CDATA[' + ytvideo_description + ']]></description>\n\t\t\t<link>' + ytvideo_webpage_url + '</link>\n\t\t\t<guid isPermaLink="false">' + ytvideo_webpage_url + '</guid>\n\t\t\t<pubDate>' + str(pubDate) + '</pubDate>\n\t\t\t<podcast:chapters url="[ITEM_CHAPTER_URL]" type="application/json"/>\n\t\t\t<itunes:subtitle><![CDATA[' + ytvideo_uploader + ']]></itunes:subtitle>\n\t\t\t<itunes:summary><![CDATA[' + ytvideo_uploader + ']]></itunes:summary>\n\t\t\t<itunes:author><![CDATA[' + ytvideo_uploader + ']]></itunes:author>\n\t\t\t<author><![CDATA[' + ytvideo_uploader + ']]></author>\n\t\t\t<itunes:image href="' + ytvideo_thumbnail + '"/>\n\t\t\t<itunes:explicit>No</itunes:explicit>\n\t\t\t<itunes:keywords>youtube</itunes:keywords>\n\t\t\t<enclosure url="' + httpHost + '/podcasts/' + pChannelID + '/' + filename_ext + '" type="video/mpeg" length="' + str(ytvideo_filesize) + '"/>\n\t\t\t<podcast:person href="' + ytvideo_channel_url + '" img="' + ytvideo_thumbnail + '">' + ytvideo_uploader + '</podcast:person>\n\t\t\t<podcast:images srcset="' + ytvideo_thumbnail + ' 2000w"/>\n\t\t\t<itunes:duration>' + str(ytvideo_duration) + '</itunes:duration>\n\t\t</item>\n<!-- INSERT_ITEMS_HERE -->'
                                 strRSSData = strRSSData.replace("<!-- INSERT_ITEMS_HERE -->",RSSItemsData)
+                                strRSSData = strRSSData.replace("&amp;","&")
+                                strRSSData = strRSSData.replace("&","&amp;")
                                 rss = open(rssPath + pChannelID + "RSS.xml", "w")
                                 rss.write(strRSSData)
                                 rss.close()
@@ -709,6 +711,8 @@ def Run_RSS_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive
                             strRSSData = strRSSData.replace("[PODCAST_TITLE]",pName)
                             strRSSData = strRSSData.replace("[PODCAST_IMAGE]",ytvideo_channel_image)
                             strRSSData = strRSSData.replace("[PODCAST_DESCRIPTION]",ytvideo_channel_desc)
+                            strRSSData = strRSSData.replace("&amp;","&")
+                            strRSSData = strRSSData.replace("&","&amp;")
 
                             # ======================================================== #
                             # ================= Add Items to New XML ================= #
