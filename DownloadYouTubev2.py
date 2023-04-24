@@ -7,6 +7,7 @@ import os
 import subprocess
 import json
 import requests
+import feedparser
 from email_validator import validate_email, EmailNotValidError
 # from email_validator import EmailNotValidError
 # from email_validator import EmailSynaxError
