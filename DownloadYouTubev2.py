@@ -510,7 +510,245 @@ def Run_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive, pF
         print (err.__annotations__)
         print (err.with_traceback)
         print ('\n------------------      END YT-DLP ERROR')
-        
+
+def Run_RSS_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive, pFileQuality, pChannelThumbnail, Podcast_RSSURL):
+    print('Run_RSS_YTDLP')
+    error = ''
+
+    try:
+        print ('------------------      START Read_RSS\n')
+        # ======================================================== #
+        # ============== Download Videos with yt-dlp ============= #
+        # ======================================================== #
+
+
+        NewsFeed = feedparser.parse(Podcast_RSSURL)
+
+        for rssItemCount in range(5):
+            rssItem = NewsFeed.entries[rssItemCount]
+            print ('------------------\n')
+            print ('id: ' + rssItem.id)
+            print ('title: ' + rssItem.title)
+            RSSURL = rssItem.id
+            IDString = os.path.basename(rssItem.id)
+            print ('IDString: ' + IDString)
+
+            bashcmd = "yt-dlp -v -o " + sMediaFolder + pChannelID + "/%(id)s.%(ext)s --write-info-json --no-write-playlist-metafiles --playlist-items 1,2,3,4,5 --restrict-filenames --download-archive " + pDownloadArchive + " --add-metadata --merge-output-format " + pFileFormat + " --format " + pFileQuality + " --abort-on-error --abort-on-unavailable-fragment --no-overwrites --continue --write-description " + RSSURL            # bashcmd = "yt-dlp -v -o '" + sMediaFolder + pChannelID + "/%(id)s.%(ext)s' --write-info-json --external-downloader aria2c --external-downloader-args '-c -j 10 -x 10 -s 10 -k 1M' --playlist-items 1,2,3,4,5,3,4,5 --restrict-filenames --download-archive '" + pDownloadArchive + "' --add-metadata --merge-output-format " + pFileFormat + " --format " + pFileQuality + " --abort-on-error --abort-on-unavailable-fragment --no-overwrites --continue --write-description " + pYouTubeURL
+            # print(bashcmd)
+
+            process = subprocess.Popen(bashcmd.split(), stdout=subprocess.PIPE)
+            output, error = process.communicate()
+
+            print("output: " + str(output))
+            print("error: " + str(error))
+
+            print('Downloaded Video Files for ' + pName)
+            print ('------------------      END YT-DLP\n')
+    except Exception as err:
+        print ('------------------      START YT-DLP ERROR\n')
+        print (err)
+        print (err.__annotations__)
+        print (err.with_traceback)
+        print ('\n------------------      END YT-DLP ERROR')
+
+    if error == None:
+        try:
+            print("List Files")
+            
+            directory = os.fsencode(sMediaFolder + pChannelID)
+                
+            for file in os.listdir(directory):
+                filename = os.fsdecode(file)
+                filename_noext = ""
+                filename_mediafile = ""
+                filename_json = ""
+                if filename.endswith(".description"): 
+                    try:
+                        pathname, extension = os.path.splitext(filename)
+                        filename = pathname.split('/')
+                        filename_noext = filename[-1]
+                        
+                        print("filename (no ext)" + filename_noext)
+                    except:
+                        print ('------------------      START GET EXT ERROR\n')
+                        print (err)
+                        print ('\n------------------      END GET EXT ERROR')
+
+                    filename_json = sMediaFolder + pChannelID + "/" + filename_noext + ".info.json"
+                    filename_mp3 = sMediaFolder + pChannelID + "/" + filename_noext + ".mp3"
+                    filename_mp4 = sMediaFolder + pChannelID + "/" + filename_noext + ".mp4"
+
+                    print("filename_json: " + filename_json)
+                    print("filename_mp3: " + filename_mp3)
+                    print("filename_mp4: " + filename_mp4)
+
+                    filename_json_isfile = False
+                    filename_mp3_isfile = False
+                    filename_mp4_isfile = False
+
+                    if os.path.isfile(filename_json):
+                        print('The JSON file is present.')
+                        filename_json_isfile = True
+                    if os.path.isfile(filename_mp3):
+                        print('The MP3 file is present.')
+                        filename_mp3_isfile = True
+                        filename_ext = filename_noext + ".mp3"
+                    if os.path.isfile(filename_mp4):
+                        print('The MP4 file is present.')
+                        filename_mp4_isfile = True
+                        filename_ext = filename_noext + ".mp4"
+
+                    ytvideo_uid = ""
+                    ytvideo_title = ""
+                    ytvideo_thumbnail = ""
+                    ytvideo_description = ""
+                    ytvideo_uploader = ""
+                    ytvideo_uploader_url = ""
+                    ytvideo_channel_id = ""
+                    ytvideo_channel_url = ""
+                    ytvideo_duration = ""
+                    ytvideo_webpage_url = ""
+                    ytvideo_filesize = ""
+
+                    if (filename_json_isfile == True and filename_mp4_isfile == True):
+                        # print("ADD FILE TO RSS FEED: " + filename_mp4)
+                        # print("Read JSON File")
+                        f = open(filename_json)
+                        data = json.load(f)
+                        # print(data['id'])
+                        
+                        # Iterating through the json
+                        # list
+                        # for i in data['id']:
+                        #     print(i)
+                        
+                        # ~~~~~~~~~~~~~ Get JSON Data ~~~~~~~~~~~~~ #
+                        ytvideo_uid = data['id']
+                        ytvideo_title = data['title']
+                        ytvideo_description = data['description']
+                        ytvideo_uploader = data['uploader']
+                        ytvideo_uploader_id = data['uploader_id']
+                        ytvideo_uploader_url = data['uploader_url']
+                        ytvideo_channel_id = data['uploader_id']
+                        ytvideo_channel_url = data['uploader_url']
+                        ytvideo_duration = 0
+                        ytvideo_webpage_url = data['webpage_url']
+                        ytvideo_filesize = 0
+                        ytvideo_thumbnail = data['thumbnail']
+                        # ytvideo_thumbnail = "https://i.ytimg.com/vi_webp/" + ytvideo_uid + "/maxresdefault.webp"
+                        # https://i.ytimg.com/vi_webp/wocnSQ4fsiI/maxresdefault.webp
+                        # https://i.ytimg.com/vi/wocnSQ4fsiI/maxresdefault.jpg
+
+                        print("ytvideo_uid: " + ytvideo_uid)
+                        print("ytvideo_title: " + ytvideo_title)
+                        print("ytvideo_uploader: " + ytvideo_uploader)
+                        print("ytvideo_uploader_id: " + ytvideo_uploader_id)
+                        print("ytvideo_uploader_url: " + ytvideo_uploader_url)
+                        print("ytvideo_channel_id: " + ytvideo_channel_id)
+                        print("ytvideo_channel_url: " + ytvideo_channel_url)
+                        print("ytvideo_webpage_url: " + ytvideo_webpage_url)
+
+                        # print('ytvideo_duration: ' + str(ytvideo_duration))
+                        print ('\n------------------      Item (' + ytvideo_uid + ')')
+
+                        # Closing file
+                        f.close()
+
+                        # # ======================================================== #
+                        # # ================ Get Channel Information =============== #
+                        # # ======================================================== #
+                        ytvideo_channel_image = pChannelThumbnail
+                        ytvideo_channel_desc = '{pName} (@{ytvideo_uploader}) - TikTok'
+
+
+                        rssPathFile = rssPath + pChannelID + 'RSS.xml'
+                        print("RSS File Path: " + rssPathFile)
+                        if os.path.isfile(rssPathFile):
+                            print('The RSS file is present. File: ' + rssPathFile)
+                            rssPathFile_isfile = True
+
+                            with open(rssPathFile, 'r') as rsstemplate:
+                                RSSData = rsstemplate.readlines()
+                                strRSSData = ''.join(RSSData)
+
+                            # ======================================================== #
+                            # =============== Add Items to Existing XML ============== #
+                            # ======================================================== #
+
+                            if ytvideo_uid in strRSSData:
+                                print("Item (" + ytvideo_uid + ") already in RSS file")
+                            else:
+                                print("Item (" + ytvideo_uid + ") not in RSS file")
+                                pubDate = time.strftime('%d/%m/%Y %H:%M:%S' + ' +1000')
+                                # print("pubDate: " + pubDate)
+                                RSSItemsData = '\t\t<item>\n\t\t\t<title><![CDATA[' + ytvideo_title + ']]></title>\n\t\t\t<description><![CDATA[' + ytvideo_description + ']]></description>\n\t\t\t<link>' + ytvideo_webpage_url + '</link>\n\t\t\t<guid isPermaLink="false">' + ytvideo_webpage_url + '</guid>\n\t\t\t<pubDate>' + str(pubDate) + '</pubDate>\n\t\t\t<podcast:chapters url="[ITEM_CHAPTER_URL]" type="application/json"/>\n\t\t\t<itunes:subtitle><![CDATA[' + ytvideo_uploader + ']]></itunes:subtitle>\n\t\t\t<itunes:summary><![CDATA[' + ytvideo_uploader + ']]></itunes:summary>\n\t\t\t<itunes:author><![CDATA[' + ytvideo_uploader + ']]></itunes:author>\n\t\t\t<author><![CDATA[' + ytvideo_uploader + ']]></author>\n\t\t\t<itunes:image href="' + ytvideo_thumbnail + '"/>\n\t\t\t<itunes:explicit>No</itunes:explicit>\n\t\t\t<itunes:keywords>youtube</itunes:keywords>\n\t\t\t<enclosure url="' + httpHost + '/podcasts/' + pChannelID + '/' + filename_ext + '" type="video/mpeg" length="' + str(ytvideo_filesize) + '"/>\n\t\t\t<podcast:person href="' + ytvideo_channel_url + '" img="' + ytvideo_thumbnail + '">' + ytvideo_uploader + '</podcast:person>\n\t\t\t<podcast:images srcset="' + ytvideo_thumbnail + ' 2000w"/>\n\t\t\t<itunes:duration>' + str(ytvideo_duration) + '</itunes:duration>\n\t\t</item>\n<!-- INSERT_ITEMS_HERE -->'
+                                strRSSData = strRSSData.replace("<!-- INSERT_ITEMS_HERE -->",RSSItemsData)
+                                rss = open(rssPath + pChannelID + "RSS.xml", "w")
+                                rss.write(strRSSData)
+                                rss.close()
+                                print("Item added to RSS file: " + ytvideo_uid)
+
+                                # ======================================================== #
+                                # ==================== Notify Pushover =================== #
+                                # ======================================================== #
+
+                                NotifyPushover("apb75jkyb1iegxzp4styr5tgidq3fg","RSS Podcast Downloaded (" + pName + ")","<html><body>" + ytvideo_title + "<br /><br />--------------------------------------------<br /><br />" + ytvideo_description + "</body></html>",ytvideo_thumbnail)
+                        else:
+                            print('The RSS file is not present. File: ' + rssPathFile)
+                            rssPathFile_isfile = False
+
+                            # ======================================================== #
+                            # ================== Create New RSS File ================= #
+                            # ======================================================== #
+
+                            with open(rssTemplatePath, 'r') as rsstemplate:
+                                RSSData = rsstemplate.readlines()
+                                strRSSData = ''.join(RSSData)
+                            strRSSData = strRSSData.replace("[CHANNEL_LINK]",ytvideo_channel_url)
+                            strRSSData = strRSSData.replace("[PODCAST_TITLE]",pName)
+                            strRSSData = strRSSData.replace("[PODCAST_IMAGE]",ytvideo_channel_image)
+                            strRSSData = strRSSData.replace("[PODCAST_DESCRIPTION]",ytvideo_channel_desc)
+
+                            # ======================================================== #
+                            # ================= Add Items to New XML ================= #
+                            # ======================================================== #
+
+                            pubDate = time.strftime('%d/%m/%Y %H:%M:%S' + ' +1000')
+                            # print("pubDate: " + pubDate)
+                            RSSItemsData = '\t\t<item>\n\t\t\t<title><![CDATA[' + ytvideo_title + ']]></title>\n\t\t\t<description><![CDATA[' + ytvideo_description + ']]></description>\n\t\t\t<link>' + ytvideo_webpage_url + '</link>\n\t\t\t<guid isPermaLink="false">' + ytvideo_webpage_url + '</guid>\n\t\t\t<pubDate>' + str(pubDate) + '</pubDate>\n\t\t\t<podcast:chapters url="[ITEM_CHAPTER_URL]" type="application/json"/>\n\t\t\t<itunes:subtitle><![CDATA[' + ytvideo_uploader + ']]></itunes:subtitle>\n\t\t\t<itunes:summary><![CDATA[' + ytvideo_uploader + ']]></itunes:summary>\n\t\t\t<itunes:author><![CDATA[' + ytvideo_uploader + ']]></itunes:author>\n\t\t\t<author><![CDATA[' + ytvideo_uploader + ']]></author>\n\t\t\t<itunes:image href="' + ytvideo_thumbnail + '"/>\n\t\t\t<itunes:explicit>No</itunes:explicit>\n\t\t\t<itunes:keywords>youtube</itunes:keywords>\n\t\t\t<enclosure url="' + httpHost + '/podcasts/' + pChannelID + '/' + filename_ext + '" type="video/mpeg" length="' + str(ytvideo_filesize) + '"/>\n\t\t\t<podcast:person href="' + ytvideo_channel_url + '" img="' + ytvideo_thumbnail + '">' + ytvideo_uploader + '</podcast:person>\n\t\t\t<podcast:images srcset="' + ytvideo_thumbnail + '2000w"/>\n\t\t\t<itunes:duration>' + str(ytvideo_duration) + '</itunes:duration>\n\t\t</item>\n<!-- INSERT_ITEMS_HERE -->'
+                            strRSSData = strRSSData.replace("<!-- INSERT_ITEMS_HERE -->",RSSItemsData)
+                            print("Item added to RSS file: " + ytvideo_uid)
+
+                            # ======================================================== #
+                            # ==================== Notify Pushover =================== #
+                            # ======================================================== #
+
+                            NotifyPushover("apb75jkyb1iegxzp4styr5tgidq3fg","RSS Podcast Downloaded (" + pName + ")","<html><body>" + ytvideo_title + "<br /><br />--------------------------------------------<br /><br />" + ytvideo_description + "</body></html>",ytvideo_thumbnail)
+
+                            # ======================================================== #
+                            # ==================== Write XML File ==================== #
+                            # ======================================================== #
+
+                            # print("----------------------")
+                            # print(strRSSData)
+                            # print("----------------------")
+
+                            rss = open(rssPath + pChannelID + "RSS.xml", "w")
+                            # rss = open("/mnt/pve/NFS_1TB/Python/" + pChannelID + "RSS.xml", "w")
+                            rss.write(strRSSData)
+                            rss.close()
+                            print ('\n------------------      END Item (' + ytvideo_uid + ')')
+                    continue
+                else:
+                    continue
+        except Exception as err:
+            print ('------------------      START GET FILES ERROR\n')
+            print (err)
+            print (err.__annotations__)
+            print (err.with_traceback)
+            print ('\n------------------      END GET FILES ERROR')
+
+
 # ======================================================== #
 # ===================== Script Start ===================== #
 # ======================================================== #
@@ -639,6 +877,41 @@ if exist == True:
                 print("Podcast_YouTubeURL: " + Podcast_YouTubeURL)
 
                 NotifyYouTube(Podcast_Name, Podcast_YouTubeURL)
+
+            # ======================================================== #
+            # ======================= Read RSS ======================= #
+            # ======================================================== #
+
+            xmlPodcastsDownload = file.getElementsByTagName('RSSDownload')
+            for elem in xmlPodcastsDownload:
+                Podcast_Name = elem.attributes['Name'].value
+                Podcast_ChannelID = elem.attributes['ChannelID'].value
+                Podcast_FileFormat = elem.attributes['FileFormat'].value
+                Podcast_DownloadArchive = elem.attributes['DownloadArchive'].value
+                Podcast_FileQuality = elem.attributes['FileQuality'].value
+                Podcast_ChannelThumbnail = elem.attributes['ChannelThumbnail'].value
+                # Podcast_RSSURL = elem.attributes['RSSFeed'].value
+                Podcast_TikTokFeed = elem.attributes['TikTokFeed'].value
+                Podcast_TikTokUsername = elem.attributes['TikTokUsername'].value
+                Podcast_RSSURL = str(Podcast_TikTokFeed) + str(Podcast_TikTokUsername)
+                
+                print ('------------------      Podcast\n')
+                print("Podcast_Name: " + Podcast_Name)
+                print("Podcast_ChannelID: " + Podcast_ChannelID)
+                print("Podcast_FileFormat: " + Podcast_FileFormat)
+                print("Podcast_DownloadArchive: " + Podcast_DownloadArchive)
+                print("Podcast_FileQuality: " + Podcast_FileQuality)
+                print("Podcast_ChannelThumbnail: " + Podcast_ChannelThumbnail)
+                print("Podcast_TikTokUsername: " + Podcast_TikTokUsername)
+                print("Podcast_RSSURL: " + str(Podcast_RSSURL))
+                print ('\n')
+
+                # ======================================================== #
+                # ====================== Run YT-DLP ====================== #
+                # ======================================================== #
+
+                Run_RSS_YTDLP(Settings_MediaFolder, Podcast_Name, Podcast_ChannelID, Podcast_FileFormat, Podcast_DownloadArchive, Podcast_FileQuality, Podcast_ChannelThumbnail, Podcast_RSSURL)
+                DeleteOldFiles(7,Settings_MediaFolder + Podcast_ChannelID + "/")
 
             # ======================================================== #
             # ============== Loop through TwitchNotifty ============= #
