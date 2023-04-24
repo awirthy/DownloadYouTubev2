@@ -206,13 +206,13 @@ def NotifyYouTube(pName, pYouTubeURL):
                 ytvideo_title = data['title']
                 ytvideo_description = data['description']
                 ytvideo_uploader = data['uploader']
-                ytvideo_uploader_id = data['uploader_id']
-                ytvideo_uploader_url = data['uploader_url']
-                ytvideo_channel_id = data['channel_id']
-                ytvideo_channel_url = data['channel_url']
-                ytvideo_duration = 0
+                # ytvideo_uploader_id = data['uploader_id']
+                # ytvideo_uploader_url = data['uploader_url']
+                # ytvideo_channel_id = data['channel_id']
+                # ytvideo_channel_url = data['channel_url']
+                # ytvideo_duration = 0
                 ytvideo_webpage_url = data['webpage_url']
-                ytvideo_filesize = 0
+                # ytvideo_filesize = 0
                 ytvideo_thumbnail = data['thumbnail']
 
                 print("ytvideo_uid: " + ytvideo_uid)
