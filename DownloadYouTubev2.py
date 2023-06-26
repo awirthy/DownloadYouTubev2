@@ -8,6 +8,7 @@ import subprocess
 import json
 import requests
 import feedparser
+import gc
 from email_validator import validate_email, EmailNotValidError
 # from email_validator import EmailNotValidError
 # from email_validator import EmailSynaxError
@@ -19,6 +20,20 @@ from email_validator import validate_email, EmailNotValidError
 #     # print(x)
 
 def DeleteOldFiles(NumberofDays,FolderPath):        
+    N = ''
+    list_of_files = ''
+    current_time = ''
+    day = ''
+    i = ''
+    file_location = ''
+    current_time = ''
+    pathname = ''
+    extension = ''
+    file_desc = ''
+    file_mp4 = ''
+    file_mp3 = ''
+    file_json = ''
+    file_time = ''
     # N is the number of days for which
     # we have to check whether the file
     # is older than the specified days or not
@@ -72,6 +87,24 @@ def DeleteOldFiles(NumberofDays,FolderPath):
                     if os.path.isfile(file_json):
                         print(f" Delete : " + file_json)
                         os.remove(file_json)
+    # ~~~~~~~~~~~~ Clear Variables ~~~~~~~~~~~~ #
+    del NumberofDays
+    del N
+    del list_of_files
+    del current_time
+    del day
+    del i
+    del file_location
+    del FolderPath
+    del current_time
+    del pathname
+    del extension
+    del file_desc
+    del file_mp4
+    del file_mp3
+    del file_json
+    del file_time
+    gc.collect()
 
 def NotifyPushover(AppToken,nTitle,nBody,pThumbnail):
     # wget -O "/config/json/maxresdefault2.jpg" $ytvideo_thumbnail;
@@ -98,82 +131,40 @@ def NotifyPushover(AppToken,nTitle,nBody,pThumbnail):
         print ('------------------      START NotifyPushover ERROR\n')
         print (err)
         print ('\n------------------      END NotifyPushover ERROR')
-
-def NotifyTwitch(pName, pYouTubeURL):
-
-    try:
-        print ('------------------      START NotifyTwitch\n')
-        bashcmd = "yt-dlp -v -o " + jsonMediaFolder_Twitch + "/%(id)s.%(ext)s --skip-download --write-info-json --no-write-playlist-metafiles --restrict-filenames --download-archive " + Twitch_DownloadArchive + " --add-metadata --merge-output-format mp4 --format best --abort-on-error --abort-on-unavailable-fragment --no-overwrites --continue " + pYouTubeURL
-        # bashcmd = "yt-dlp -v -o " + jsonMediaFolder_YouTube + "/%(id)s.%(ext)s --skip-download --playlist-items 1,2,3,4,5 --write-info-json --no-write-playlist-metafiles --restrict-filenames --download-archive /config/json/youtube-dl-notify.txt --add-metadata --merge-output-format mp4 --format best --abort-on-error --abort-on-unavailable-fragment --no-overwrites --continue " + pYouTubeURL
-
-        process = subprocess.Popen(bashcmd.split(), stdout=subprocess.PIPE)
-        output, error = process.communicate()
-
-        print("output: " + str(output))
-        print("error: " + str(error))
-
-        directory = os.fsencode(jsonMediaFolder_Twitch)
-                
-        for file in os.listdir(directory):
-            filename = os.fsdecode(file)
-            filename_noext = ""
-            filename_mediafile = ""
-            filename_json = ""
-            if filename.endswith(".json"): 
-                print("Notify Filename: " + filename)
-
-                f = open(jsonMediaFolder_Twitch + filename)
-                data = json.load(f)
-                
-                # ~~~~~~~~~~~~~ Get JSON Data ~~~~~~~~~~~~~ #
-                ytvideo_uid = data['id']
-                ytvideo_title = data['title']
-                # ytvideo_description = data['description']
-                ytvideo_uploader = data['uploader']
-                ytvideo_webpage_url = data['webpage_url']
-                ytvideo_thumbnail = data['thumbnail']
-
-                print("ytvideo_uid: " + ytvideo_uid)
-                print("ytvideo_title: " + ytvideo_title)
-                print("ytvideo_uploader: " + ytvideo_uploader)
-                # print("ytvideo_description: " + ytvideo_description)
-                print("ytvideo_thumbnail: " + ytvideo_thumbnail)
-
-                # ~~~~~~~~~~~~~~ Get Chapters ~~~~~~~~~~~~~ #
-
-                for chapters in data['chapters']:
-                    chaptersjson = str(chapters).replace("'",'"')
-                    # print('thumbs json: ' + thumbsjson)
-                    chaptersdata = json.loads(chaptersjson)
-
-                    ytvideo_chapter_title = chaptersdata['title']
-                    print("chapter: " + ytvideo_chapter_title)
-
-                f.close()
-
-                # ~~~~~~~~~~~~~ Add to archive ~~~~~~~~~~~~ #
-
-                archive = open(Twitch_DownloadArchive, "a")
-                archive.write("youtube " + ytvideo_uid + "\n")
-                archive.close()
-                os.remove(jsonMediaFolder_Twitch + "/" + ytvideo_uid + ".info.json") 
-
-                # ======================================================== #
-                # ==================== Notify Pushover =================== #
-                # ======================================================== #
-
-                # print("NotifyPushover: " + "Twitch Video Uploaded (" + pName + ") - " + ytvideo_title)
-                # NotifyPushover("aqug9r3zj8zw5aq17gu6ozd5gk55sd","Twitch Video Uploaded (" + pName + ")","<html><body>" + ytvideo_title + "<br /><br />" + ytvideo_webpage_url + "</body></html>",ytvideo_thumbnail)
-
-        # print('Downloaded Video Files for ' + pName)
-        print ('------------------      END NotifyTwitch\n')
-    except Exception as err:
-        print ('------------------      START NotifyTwitch ERROR\n')
-        print (err)
-        print ('\n------------------      END NotifyTwitch ERROR')
+    # ~~~~~~~~~~~~ Clear Variables ~~~~~~~~~~~~ #
+    del bashcmd
+    del pThumbnail
+    del process
+    del output
+    del error
+    del APPLICATION_TOKEN
+    del AppToken
+    del USER_TOKEN
+    del url
+    del my_pushover_request
+    del req
+    del err
+    gc.collect()
 
 def NotifyYouTube(pName, pYouTubeURL):
     # print("NotifyYouTube")
+    bashcmd = ''
+    process = ''
+    output = ''
+    error = ''
+    directory = ''
+    file = ''
+    filename = ''
+    filename_noext = ''
+    filename_mediafile = ''
+    filename_json = ''
+    ytvideo_uid = ''
+    ytvideo_title = ''
+    ytvideo_description = ''
+    ytvideo_uploader = ''
+    ytvideo_webpage_url = ''
+    ytvideo_thumbnail = ''
+    archive = ''
 
     #              yt-dlp -v -o "/config/json/videos/%(title)s_[%(id)s].%(ext)s" --skip-download --playlist-items 1,2,3,4,5,3,4,5 --write-info-json --no-write-playlist-metafiles --restrict-filenames --download-archive "/config/json/youtube-dl-notify.txt" --add-metadata --merge-output-format mp4 --format "best" --abort-on-error --abort-on-unavailable-fragment --no-overwrites --continue "${URL}";
 
@@ -245,6 +236,28 @@ def NotifyYouTube(pName, pYouTubeURL):
         print ('------------------      START NotifyYouTube ERROR\n')
         print (err)
         print ('\n------------------      END NotifyYouTube ERROR')
+
+    # ~~~~~~~~~~~~ Clear Variables ~~~~~~~~~~~~ #
+    del pName
+    del pYouTubeURL
+    del bashcmd
+    del process
+    del output
+    del error
+    del directory
+    del file
+    del filename
+    del filename_noext
+    del filename_mediafile
+    del filename_json
+    del ytvideo_uid
+    del ytvideo_title
+    del ytvideo_description
+    del ytvideo_uploader
+    del ytvideo_webpage_url
+    del ytvideo_thumbnail
+    del archive
+    gc.collect()
 
 def Run_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive, pFileQuality, pChannelThumbnail, pYouTubeURL):
     print('Run_YTDLP')
@@ -752,7 +765,6 @@ def Run_RSS_YTDLP(sMediaFolder, pName, pChannelID, pFileFormat, pDownloadArchive
             print (err.__annotations__)
             print (err.with_traceback)
             print ('\n------------------      END GET FILES ERROR')
-
 
 # ======================================================== #
 # ===================== Script Start ===================== #

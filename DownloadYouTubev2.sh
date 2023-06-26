@@ -1,4 +1,4 @@
 # /etc/cron.d/ytdl
 # 
-python3 /opt/DownloadYouTubev2/DownloadYouTubev2-1.24.0/DownloadYouTubev2.py  >> /proc/1/fd/1;
+python3 /opt/DownloadYouTubev2/DownloadYouTubev2-1.25.0/DownloadYouTubev2.py  >> /proc/1/fd/1;
 echo "DONE"  >> /proc/1/fd/1;
